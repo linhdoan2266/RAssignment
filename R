@@ -1,0 +1,182 @@
+#dataset
+foo <- read.csv("https://tinyurl.com/yb4phxx8")
+names(foo)
+head(foo)
+dim(foo)
+str(foo)
+
+date.columns <- c(11, 12, 14, 15, 16, 17, 18, 25)
+
+for(i in date.columns)  
+{
+  which_values_are_missing <- which(as.character(foo[, i]) == "")
+  foo[which_values_are_missing, i] <- NA
+  foo[, i] <- as.Date(as.character(foo[, i]))
+}
+
+#new data set that only contain Circulation Date >= 2018-01-01 and eliminate NA
+data <- foo[(!is.na(foo$CirculationDate) & foo$CirculationDate >= "2008-01-01"),]
+names(data)
+
+#ASSIGNMENT
+
+#ASSIGNMENT 1
+
+#QUESTION 1A
+#new data set that eliminate NA in the column "OriginalCompletionDate" and "ApprovalDate"
+dat1 <- data[(!is.na(data$OriginalCompletionDate) & !is.na(data$ApprovalDate)),]
+names(dat1)
+
+#The aprpoval period (the difference between the original project completion date and the the approval date)
+dat1 <- dat1[,c("OriginalCompletionDate", "ApprovalDate")]
+dat1$ProjectDurationAtApproval <- as.numeric(dat1$OriginalCompletionDate - dat1$ApprovalDate)
+
+#Mean of the Project Approval Period (month)
+mean(dat1$ProjectDurationAtApproval)
+
+#Standard Deviation of the Project Duration of Approval (month)
+sd(dat1$ProjectDurationAtApproval)
+
+#Histogram Plot of Project Duration Approval (in month)
+hist(dat1$ProjectDurationAtApproval, breaks=50, xlab = "Projecct Duration Approval")
+
+#The claim is not true because the project duration at approval is approximately 21 months (not 24 months)
+
+# Plot of Project Duration and Circulation Date
+dat2 <- data[(!is.na(data$OriginalCompletionDate) & !is.na(data$ApprovalDate)),]
+dat2$ProjectDurationAtApproval <- as.numeric(dat2$OriginalCompletionDate - dat2$ApprovalDate)
+
+plot(dat2$CirculationDate, dat2$ProjectDurationAtApproval, type="p", cex=.1,
+     main='Project duration @ Circulation Date', xlab="Circulation Date", ylab="Project duration in days")
+
+#Plot of mean of Project Duration changed throughout Circulation Years
+library(plyr)
+dat2$CirculationYear <- format(as.Date(dat2$CirculationDate), format="%Y")
+dat2_mean <- ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_mean_Duration=mean(ProjectDurationAtApproval))
+plot(dat2_mean, xlab="CirculationYear", ylab="Project duration mean in days")
+
+#Plot of median of Project Duration changed throughout Circulation Years
+dat2_median <- ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_median_Duration=median(ProjectDurationAtApproval))
+plot(dat2_median, xlab="CirculationYear", ylab="Project duration median in days")
+
+#Quantile
+dat2_quartile <- c(ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[1]), 
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[2]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[3]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[4]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[5]))
+dat2_quartile <- data.frame(matrix(unlist(dat2_quartile), nrow=11, byrow=F))
+t(dat2_quartile)
+dat2_quartile <- dat2_quartile[, -c(3, 5, 7, 9)]
+dat2_quartile <- c(ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[1]), 
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[2]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[3]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[4]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[5]))
+dat2_quartile <- data.frame(matrix(unlist(dat2_quartile), nrow=11, byrow=F))
+t(dat2_quartile)
+dat2_quartile <- dat2_quartile[, -c(3, 5, 7, 9)]
+dat2_quartile <- c(ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[1]), 
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[2]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[3]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[4]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[5]))
+dat2_quartile <- data.frame(matrix(unlist(dat2_quartile), nrow=11, byrow=F))
+t(dat2_quartile)
+dat2_quartile <- dat2_quartile[, -c(3, 5, 7, 9)]
+dat2_quartile <- c(ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[1]), 
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[2]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[3]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[4]),
+                   ddply(dat2[, c("ProjectDurationAtApproval", "CirculationYear")], .(CirculationYear), summarize, annual_quartile_Duration=quantile(ProjectDurationAtApproval)[5]))
+dat2_quartile <- data.frame(matrix(unlist(dat2_quartile), nrow=11, byrow=F))
+t(dat2_quartile)
+dat2_quartile <- dat2_quartile[, -c(3, 5, 7, 9)]
+matplot(dat2_quartile[, 1], dat2_quartile[, 2:6], type = 'l', xlab = "year", ylab = "project duration in days", col = 2:4, pch = 1)
+#The mean duration of Project Approval increase from 2008-2010, decrease from 2010-2012, and generally
+#increase from 2012-2018. Overally, projects take longer to get approval over years. 
+
+#QUESTION 1B
+
+#new data set that eliminates "NA" in the column "RevisedCompletionDate"
+dat3 <- dat2[(!is.na(dat2$RevisedCompletionDate)),]
+
+#Adding a new column which is the actual duration
+dat3$ActualDuration <- as.numeric(dat3$RevisedCompletionDate - dat3$ApprovalDate)
+
+#Adding a new column which is the difference between the original planned project duration 
+#and the actual duration
+dat3$DurationDifference <- as.numeric(dat3$ActualDuration - dat3$ProjectDurationAtApproval)
+
+#Mean, SD, and quartile of the duration difference
+mean(dat3$DurationDifference)
+sd(dat3$DurationDifference)
+median(dat3$DurationDifference)
+quantile(dat3$DurationDifference)
+
+#The difference between the orginal planned duration and the revised duration fluctuates 
+#from 573+/-467 days (106-1040 days) 
+
+#QUESTION 2
+install.packages("epiDisplay")
+library(epiDisplay)
+tab1(data$Rating, cum.percent = TRUE)
+
+#QUESTION 3
+#new data set that eliminate all "PPTA" projects
+library(dplyr)
+dat4 <- data %>% filter(Type != "PPTA")
+tab1(dat4$Rating, cum.percent = TRUE)
+
+#QUESTION 4
+quantile(data$RevisedAmount)
+
+#According to a quartile table below: 
+#Bottom 25%: Revised Amount <= 0.400
+#Top 25%: 1.000 <= Revised Amount 
+
+#New data set for the bottom 25% and the top 25%
+dat5 <- data %>% filter(RevisedAmount <= 0.400)
+dat5 = dat5[!is.na(dat5$Rating),]
+sum_dat5 <- summary(dat5)
+sum_dat6 [,9]
+
+dat6 <- data %>% filter(RevisedAmount >= 1.000)
+dat6 = dat6[!is.na(dat6$Rating),]
+sum_dat6 <- summary(dat6)
+sum_dat6[,9]
+
+#Compare the rating from both data set
+tab1(dat5$Rating, cum.percent = TRUE)
+tab1(dat6$Rating, cum.percent = TRUE)
+
+#According to two graphs of rating frequency from both groups, the distribution of two groups rating
+#is quite similar, reflecting that there is not much difference in rating between the top 25% and 
+#the bottom 25% -> there is not much correlation between the Revised Amount and the Rating. 
+#Moreover, according to the summary table from dat5 and dat6 (for instance the LTAA summary), 
+#two groups have different characteristics (i.e different industries, different country investment...).
+#Therefore, there will be a lot of confounding variables when analyzing whether Revised Amount and Rating
+#have a causal relationship. 
+
+# QUESTION 5
+# Imagine your manager asks you to apply Jeremy Howard's drivetrain model to the 
+# problem of optimal budget-setting to maximize project success (i.e., "Rating"). 
+# In such a situation, what would be the:
+# (a) decision problem or objective?: Rating maximization with optimal budget-setting portfolio
+# (b) lever or levers? (1) Type of projects, (2) Country to invest, (3) Whether the company take 
+# loan, (4) Which industry (LTAA) that the company should invest, (5) How much the project budget is
+# (Revised Amount)
+# (c) ideal RCT design? Take two groups of projects in random and control other confounding variables such as 
+# both groups have the same locations of investment, same types of projects (i.e ATDA), in the same industry
+# (i.e LTAA="Finance"). Then one group recieves a fixed amount of budget. Another group receives a random amount of budget
+# (d) dependent variable(s) and independent variable(s) in the modeler
+# independent variables: Revised Amount (Budget)
+# dependent variables: Rating
+# (e) And---Why would running RCTs and modeling/optimizing over RCT results be preferable 
+# to using (observational, non-RCT) "foo" data?
+#RCT is the best way to test whether two variables have causal relationship to each other. From question 4, we
+#could not draw any correlation between the Revised Amount and the Rating because there are many confounding
+#variables (which will happen if we use non-RCT or observational study and do not control anything). RCT limits 
+# these confounding variables and test the effect of the treatment better. 
+# Approximate suggested length: 1-3 sentences for each sub-question.
+
